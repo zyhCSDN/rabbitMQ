@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jason.seckill.order.mapper.SeckillMapper">
+
+    <sql id="Goods_Info_Column_List">
+        id,goods_name as goodsName,goods_stock as goodsStock
+    </sql>
+
+    <sql id="Order_Record_Column_List">
+        id,user_id as userId,goods_id as goodsId,pay_status as payStatus
+    </sql>
+
+    <update id="reduceGoodsStockById" parameterType="String">
+        update goods_info
+        set goods_stock = goods_stock-1
+        where goods_stock > 0
+        and id=#{goodsId}
+    </update>
+
+
+    <update id="reduceGoodsStockById1" parameterType="String">
+        update goods_info
+        set goods_stock = goods_stock+1
+        where id=#{goodsId}
+    </update>
+
+    <insert id="insertOrderRecord" parameterType="com.jason.seckill.order.entity.OrderRecord">
+        insert into order_record(id,user_id,goods_id,pay_status,create_time,update_time)
+        values(#{id},#{userId},#{goodsId},#{payStatus},SYSDATE(),SYSDATE())
+    </insert>
+
+    <update id="updatePayStatus" parameterType="com.jason.seckill.order.entity.OrderRecord">
+        update order_record
+        set pay_status = #{payStatus},update_time=SYSDATE()
+        where id = #{id}
+    </update>
+
+    <select id="selectNoPayOrderById" resultType="com.jason.seckill.order.entity.OrderRecord">
+        select <include refid="Order_Record_Column_List"></include>
+        from order_record
+        where id = #{orderId} and pay_status = 2
+    </select>
+</mapper>
